@@ -1,41 +1,17 @@
-import requests
-import csv
-from bs4 import BeautifulSoup
-
-# 1. Target URL
-url = "http://books.toscrape.com/"
-
-# 2. Get the HTML
-# (Create a variable named 'response' and use requests.get)
-
-
-# 3. Create the Soup
-# (Create a variable named 'soup'. Pass response.text and "html.parser")
-
-
-# 4. Find the Data
-# (Find all the 'h3' tags and save them to a list called 'books')
-# books = soup.find_all(...)
-
-# 5. Save to CSV
-print("Starting scrape...")
-
-# Open a file named 'leads.csv'
-with open("leads.csv", mode="w", newline="", encoding="utf-8") as file:
-    writer = csv.writer(file)
+# Write the Header row (Now with 2 columns)
+    writer.writerow(["Book Title", "Price"])
     
-    # Write the Header row first
-    writer.writerow(["Book Title"])
+    # Loop through the books (We need to find the 'article' container first for better accuracy)
+    # This finds the box that holds BOTH title and price
+    all_books = soup.find_all("article", class_="product_pod")
     
-    # Loop through the books list
-    # for book in books:
-        # Get the text from the book tag using book.text
-        # title = ...
+    for book in all_books:
+        # 1. Get the Title (It's inside an 'h3' tag, inside an 'a' tag)
+        title = book.h3.a["title"]
         
-        # Write the row
-        # writer.writerow([title])
+        # 2. Get the Price (It's inside a 'p' tag with class 'price_color')
+        price = book.find("p", class_="price_color").text
         
-        # Print it to terminal so we see it working
-        # print(f"Saved: {title}")
-
-print("Done! Check your leads.csv file.")
+        # 3. Save both to the file
+        writer.writerow([title, price])
+        print(f"Saved: {title} - {price}")
